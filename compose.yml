@@ -1,8 +1,6 @@
 services:
   xray-proxy:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/0x2badc0de/xray-proxy:latest
     ports:
       - "127.0.0.1:1080:1080"
       - "127.0.0.1:8080:8080"
