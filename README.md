@@ -34,6 +34,7 @@ Docker-образ для запуска локального proxy на базе
 | `SOCKS_PORT`   | нет          | `1080`       | Порт SOCKS5 proxy |
 | `HTTP_PORT`    | нет          | `8080`       | Порт HTTP proxy |
 | `XRAY_LOGLEVEL`| нет          | `none`       | Уровень логов Xray (`none`, `error`, `warning`, `info`, `debug`) |
+| `HEALTHCHECK_URLS`| нет          | `https://connectivitycheck.gstatic.com/generate_204 https://www.google.com/generate_204 http://clients3.google.com/generate_204`       | Список ссылок разделенных пробелом, возвращающих `204 No content` для проверки состояния туннеля |
 
 ## Быстрый старт
 
@@ -54,6 +55,7 @@ docker run -d \
   -e SOCKS_PORT=1080 \
   -e HTTP_PORT=8080 \
   -e XRAY_LOGLEVEL=warning \
+  -e HEALTHCHECK_URLS='https://cp.cloudflare.com/generate_204 http://edge-http.microsoft.com/captiveportal/generate_204' \
   xray-proxy
 ```
 
@@ -71,5 +73,6 @@ services:
       SOCKS_PORT: "1080"
       HTTP_PORT: "8080"
       XRAY_LOGLEVEL: "none"
+      HEALTHCHECK_URLS: "https://cp.cloudflare.com/generate_204 http://edge-http.microsoft.com/captiveportal/generate_204"
     restart: unless-stopped
 ```

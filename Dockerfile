@@ -19,7 +19,7 @@ FROM ghcr.io/xtls/xray-core:${XRAY_VERSION} AS xray-src
 
 FROM alpine:3.21
 
-RUN apk add --no-cache ca-certificates jq tzdata \
+RUN apk add --no-cache ca-certificates jq tzdata curl \
     && addgroup -S xray \
     && adduser -S -D -H -h /var/lib/xray -s /sbin/nologin -G xray xray \
     && mkdir -p /app/xray /usr/local/etc/xray /usr/local/share/xray /var/log/xray /var/lib/xray
@@ -30,15 +30,19 @@ COPY --from=xray-src /usr/local/etc/xray /usr/local/etc/xray
 COPY --from=vpnparser-builder /go/bin/vpnparser /usr/local/bin/vpnparser
 
 COPY entrypoint.sh /app/entrypoint.sh
-RUN sed -i 's/\r$//' /app/entrypoint.sh \
+COPY healthcheck.sh /app/healthcheck.sh
+RUN sed -i 's/\r$//' /app/entrypoint.sh /app/healthcheck.sh \
     && chown -R xray:xray /app /usr/local/etc/xray /usr/local/share/xray /var/log/xray /var/lib/xray \
-    && chmod +x /app/entrypoint.sh
+    && chmod +x /app/entrypoint.sh /app/healthcheck.sh
 
 ENV SOCKS_PORT=1080 \
     HTTP_PORT=8080 \
-    XRAY_LOGLEVEL=none
+    XRAY_LOGLEVEL=none \
+    HEALTHCHECK_URLS="https://connectivitycheck.gstatic.com/generate_204 https://www.google.com/generate_204 http://clients3.google.com/generate_204"
 
 WORKDIR /app
 USER xray
 EXPOSE 1080 8080
+HEALTHCHECK --interval=30s --timeout=12s --start-period=20s --retries=3 \
+            CMD ./healthcheck.sh
 ENTRYPOINT ["./entrypoint.sh"]
