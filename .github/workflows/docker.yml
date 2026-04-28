@@ -76,7 +76,7 @@ jobs:
           # platforms: linux/amd64
           # provenance: false
           # sbom: false
-          push: ${{ startsWith(github.ref, 'refs/tags/v') || inputs.push_image }}
+          push: ${{ startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.push_image) }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
