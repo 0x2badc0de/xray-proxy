@@ -1,50 +1,50 @@
 # xray-proxy
 
-Docker-образ для запуска локального proxy на базе **Xray**, где outbound-конфиг автоматически генерируется из VPN URI.
+A Docker image for running a local proxy powered by **Xray**, where the outbound configuration is generated automatically from a VPN URI.
 
-Поддерживаются ссылки формата:
+Supported URI formats:
 
 - `vless://...`
 - `vmess://...`
 - `ss://...`
 
-Для разбора URI используется [`vpnparser`](https://github.com/gvcgo/vpnparser), а сам `xray` берется из официального образа `ghcr.io/xtls/xray-core`.
+The URI is parsed with [`vpnparser`](https://github.com/gvcgo/vpnparser), and `xray` itself is taken from the official `ghcr.io/xtls/xray-core` image.
 
-## Что делает контейнер
+## What the container does
 
-При старте контейнер:
+On startup, the container:
 
-1. Берет значение переменной окружения `VPN_URI`
-2. Прогоняет его через `vpnparser`
-3. Генерирует `outbound` для Xray
-4. Создает временный конфиг Xray
-5. Поднимает два локальных proxy:
-   - `SOCKS5` на порту `1080`
-   - `HTTP` на порту `8080`
+1. Reads the `VPN_URI` environment variable
+2. Parses it with `vpnparser`
+3. Generates an Xray `outbound` configuration
+4. Creates a temporary Xray configuration
+5. Starts two local proxies:
+   - `SOCKS5` on port `1080`
+   - `HTTP` on port `8080`
 
-## Требования
+## Requirements
 
 - Docker
 
-## Переменные окружения
+## Environment variables
 
-| Переменная      | Обязательная | По умолчанию | Описание |
-|----------------|--------------|--------------|----------|
-| `VPN_URI`      | да           | —            | URI подключения (`vless://`, `vmess://`, `ss://` и т.д.) |
-| `SOCKS_PORT`   | нет          | `1080`       | Порт SOCKS5 proxy |
-| `HTTP_PORT`    | нет          | `8080`       | Порт HTTP proxy |
-| `XRAY_LOGLEVEL`| нет          | `none`       | Уровень логов Xray (`none`, `error`, `warning`, `info`, `debug`) |
-| `HEALTHCHECK_URLS`| нет          | `https://connectivitycheck.gstatic.com/generate_204 https://www.google.com/generate_204 http://clients3.google.com/generate_204`       | Список ссылок разделенных пробелом, возвращающих `204 No content` для проверки состояния туннеля |
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `VPN_URI` | yes | — | Connection URI (`vless://`, `vmess://`, `ss://`, etc.) |
+| `SOCKS_PORT` | no | `1080` | SOCKS5 proxy port |
+| `HTTP_PORT` | no | `8080` | HTTP proxy port |
+| `XRAY_LOGLEVEL` | no | `none` | Xray log level (`none`, `error`, `warning`, `info`, `debug`) |
+| `HEALTHCHECK_URLS` | no | `https://connectivitycheck.gstatic.com/generate_204 https://www.google.com/generate_204 http://clients3.google.com/generate_204` | Space-separated list of URLs that return `204 No Content` and are used to check tunnel health |
 
-## Быстрый старт
+## Quick start
 
-### Сборка
+### Build
 
 ```bash
 docker build -t xray-proxy .
 ```
 
-### Запуск
+### Run
 
 ```bash
 docker run -d \
@@ -59,7 +59,9 @@ docker run -d \
   xray-proxy
 ```
 
-### Через compose [compose.yml](https://raw.githubusercontent.com/0x2badc0de/xray-proxy/refs/heads/main/compose.yml)
+### Docker Compose
+
+Example [`compose.yml`](https://raw.githubusercontent.com/0x2badc0de/xray-proxy/refs/heads/main/compose.yml):
 
 ```yaml
 services:
