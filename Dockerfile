@@ -17,7 +17,7 @@ FROM ghcr.io/xtls/xray-core:${XRAY_VERSION} AS xray-src
 
 ## final image
 
-FROM alpine:3.21
+FROM alpine:3.23
 
 RUN apk add --no-cache ca-certificates jq tzdata curl \
     && addgroup -S xray \
