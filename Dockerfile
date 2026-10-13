@@ -4,7 +4,7 @@ ARG XRAY_VERSION=26.7.28
 
 ## compile vpnparser
 
-FROM golang:1.26-alpine AS vpnparser-builder
+FROM golang:1.27-alpine AS vpnparser-builder
 
 RUN apk add --no-cache git ca-certificates
 RUN go install github.com/gvcgo/vpnparser@latest
