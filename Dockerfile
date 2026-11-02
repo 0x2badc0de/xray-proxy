@@ -19,7 +19,7 @@ FROM ghcr.io/xtls/xray-core:${XRAY_VERSION} AS xray-src
 
 FROM alpine:3.24
 
-RUN apk add --no-cache ca-certificates jq tzdata curl \
+RUN apk add --no-cache ca-certificates jq tzdata curl tini \
     && addgroup -S xray \
     && adduser -S -D -H -h /var/lib/xray -s /sbin/nologin -G xray xray \
     && mkdir -p /app/xray /usr/local/etc/xray /usr/local/share/xray /var/log/xray /var/lib/xray
@@ -43,6 +43,6 @@ ENV SOCKS_PORT=1080 \
 WORKDIR /app
 USER xray
 EXPOSE 1080 8080
-HEALTHCHECK --interval=30s --timeout=12s --start-period=20s --retries=3 \
-            CMD ./healthcheck.sh
-ENTRYPOINT ["./entrypoint.sh"]
+HEALTHCHECK --interval=30s --timeout=35s --start-period=20s --retries=3 \
+    CMD ["/app/healthcheck.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/app/entrypoint.sh"]
