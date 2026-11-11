@@ -1,6 +1,6 @@
 ## args
 
-ARG XRAY_VERSION=26.10.31
+ARG XRAY_VERSION=26.11.9
 
 ## compile vpnparser
 
